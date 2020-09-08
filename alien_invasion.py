@@ -3,6 +3,7 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
+import game_functions as gf
 
 def run_game():
     #Inicio del juego y creacion de la pantalla del juego
@@ -15,14 +16,9 @@ def run_game():
 
     #Inicio del ciclo del juego
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                sys.exit()
+        gf.check_events()
+        gf.update_screen(ai_settings, screen, ship)
         
-        screen.fill(ai_settings.bg_color)
-        ship.blitme()
-
-        pygame.display.flip()
 
 if __name__ == "__main__":
     run_game()
