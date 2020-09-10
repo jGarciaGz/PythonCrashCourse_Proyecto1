@@ -44,7 +44,7 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     #alien.blitme()
     pygame.display.flip()
 
-def update_bullets(aliens, bullets):
+def update_bullets(ai_settings, screen, ship, aliens, bullets):
     """Actulizar la posicion de la balas y borrar las viejas"""
     #Actulizar la posicion de la bala
     bullets.update()
@@ -52,9 +52,17 @@ def update_bullets(aliens, bullets):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    #Checar si alguna bala le pega a un alien
-    #Si es asi, quitar la bala y el alien
+    
+    check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets)
+
+def check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets):
+    """Responder a la colision de balas con aliens"""
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    #Crear una nueva flota te aliens si ya no hay
+    if len(aliens) == 0:
+        #Destruye las balas existentes y crea una flota de aliens
+        bullets.empty()
+        create_fleet(ai_settings, screen, ship, aliens)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
     """Dispara una bala si aun no se ha alcanzado el limite permitido"""
