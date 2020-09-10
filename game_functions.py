@@ -108,16 +108,19 @@ def get_number_rows(ai_settings, ship_height, alien_height):
 
 def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
     """Respuesta a la colision de nave y alien"""
-    #Restar una vida
-    stats.ships_left -= 1
-    #Vaciar la lista de los aliens y las balas
-    aliens.empty()
-    bullets.empty()
-    #Crear una flota y centrar la nave
-    create_fleet(ai_settings, screen, ship, aliens)
-    ship.center_ship()
-    #Pausa
-    sleep(0.5)
+    if stats.ships_left > 0:
+        #Restar una vida
+        stats.ships_left -= 1
+        #Vaciar la lista de los aliens y las balas
+        aliens.empty()
+        bullets.empty()
+        #Crear una flota y centrar la nave
+        create_fleet(ai_settings, screen, ship, aliens)
+        ship.center_ship()
+        #Pausa
+        sleep(0.5)
+    else:
+        stats.game_active = False
 
 def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
     """Checar si algun alien ha llegado al limte inferior de pantalla"""

@@ -32,12 +32,13 @@ def run_game():
     #Inicio del ciclo del juego
     while True:
         gf.check_events(ai_settings, screen, ship, bullets)
-        ship.update()
-        gf.update_bullets(ai_settings, screen, ship, aliens, bullets)
-        gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
+        if stats.game_active:   
+            ship.update()
+            gf.update_bullets(ai_settings, screen, ship, aliens, bullets)
+            gf.update_aliens(ai_settings, stats, screen, ship, aliens, bullets)
+        else:
+            sys.exit()
         gf.update_screen(ai_settings, screen, ship, aliens, bullets)
-        
-        
 
 if __name__ == "__main__":
     run_game()
