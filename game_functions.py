@@ -15,7 +15,6 @@ def check_keydown_events(event, ai_settings, screen, ship, bullets):
         fire_bullet(ai_settings, screen, ship, bullets)
     elif event.key == pygame.K_q:
         sys.exit()
-        
 
 def check_keyup_events(event, ship):
     """"Respondiendo a cuando se suelta la tecla"""
@@ -24,7 +23,7 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_events(ai_settings, screen, ship, bullets):
+def check_events(ai_settings, screen, stats, play_button, ship, bullets):
     """Responde a las teclas y clicks del mouse"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -33,8 +32,16 @@ def check_events(ai_settings, screen, ship, bullets):
             check_keydown_events(event, ai_settings, screen, ship, bullets)
         elif event.type == pygame.KEYUP:
             check_keyup_events(event, ship)
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            check_play_button(stats, play_button, mouse_x, mouse_y)
 
-def update_screen(ai_settings, screen, ship, aliens, bullets):
+def check_play_button(stats, play_button, mouse_x, mouse_y):
+    """Empezar un nuevo juego cuando le den click en jugar"""
+    if play_button.rect.collidepoint(mouse_x, mouse_y):
+        stats.game_active = True 
+
+def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
     """Actulizar lo que pasa en la pantalla"""
     screen.fill(ai_settings.bg_color)
     #Redibujar todas las balas
@@ -43,6 +50,9 @@ def update_screen(ai_settings, screen, ship, aliens, bullets):
     ship.blitme()
     aliens.draw(screen)
     #alien.blitme()
+    #Dibujar el boton de play si el juego esta inactivo
+    if not stats.game_active:
+        play_button.draw_button()
     pygame.display.flip()
 
 def update_bullets(ai_settings, screen, ship, aliens, bullets):
