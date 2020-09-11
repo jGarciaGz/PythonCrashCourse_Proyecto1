@@ -56,7 +56,7 @@ def check_play_button(ai_settings, screen, stats, play_button, ship,
         create_fleet(ai_settings, screen, ship, aliens)
         ship.center_ship()
 
-def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
+def update_screen(ai_settings, screen, stats, sb, ship, aliens, bullets, play_button):
     """Actulizar lo que pasa en la pantalla"""
     screen.fill(ai_settings.bg_color)
     #Redibujar todas las balas
@@ -65,12 +65,14 @@ def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button
     ship.blitme()
     aliens.draw(screen)
     #alien.blitme()
+    #Dibujar la informacion del puntaje
+    sb.show_score()
     #Dibujar el boton de play si el juego esta inactivo
     if not stats.game_active:
         play_button.draw_button()
     pygame.display.flip()
 
-def update_bullets(ai_settings, screen, ship, aliens, bullets):
+def update_bullets(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Actulizar la posicion de la balas y borrar las viejas"""
     #Actulizar la posicion de la bala
     bullets.update()
@@ -78,16 +80,20 @@ def update_bullets(ai_settings, screen, ship, aliens, bullets):
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
-    
-    check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets)
+    check_bullet_aliens_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
-def check_bullet_aliens_collisions(ai_settings, screen, ship, aliens, bullets):
+def check_bullet_aliens_collisions(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Responder a la colision de balas con aliens"""
     collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
+    if(collisions):
+        for aliens in collisions.values(): 
+            stats.score += ai_settings.alien_points * len(aliens)
+            sb.prep_score()
     #Crear una nueva flota te aliens si ya no hay
     if len(aliens) == 0:
         #Destruye las balas existentes y crea una flota de aliens
         bullets.empty()
+        ai_settings.increase_speed()
         create_fleet(ai_settings, screen, ship, aliens)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
