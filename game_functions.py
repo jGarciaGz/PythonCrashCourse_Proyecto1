@@ -23,7 +23,7 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_events(ai_settings, screen, stats, play_button, ship, bullets):
+def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets):
     """Responde a las teclas y clicks del mouse"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,12 +34,22 @@ def check_events(ai_settings, screen, stats, play_button, ship, bullets):
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(stats, play_button, mouse_x, mouse_y)
+            check_play_button(ai_settings, screen, stats, play_button, ship, 
+                    aliens, bullets, mouse_x, mouse_y)
 
-def check_play_button(stats, play_button, mouse_x, mouse_y):
+def check_play_button(ai_settings, screen, stats, play_button, ship, 
+        aliens, bullets, mouse_x, mouse_y):
     """Empezar un nuevo juego cuando le den click en jugar"""
     if play_button.rect.collidepoint(mouse_x, mouse_y):
+        #Resetar las estadisticas del juego
+        stats.reset_stats()
         stats.game_active = True 
+        #Vacias la lista de los aliens y las balas
+        aliens.empty()
+        bullets.empty()
+        #Crear una nueva flota y centrar la nave
+        create_fleet(ai_settings, screen, ship, aliens)
+        ship.center_ship()
 
 def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
     """Actulizar lo que pasa en la pantalla"""
@@ -164,4 +174,3 @@ def change_fleet_direction(ai_settings, aliens):
     for alien in aliens.sprites():
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
-
