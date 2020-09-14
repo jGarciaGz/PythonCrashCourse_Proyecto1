@@ -89,6 +89,7 @@ def check_bullet_aliens_collisions(ai_settings, screen, stats, sb, ship, aliens,
         for aliens in collisions.values(): 
             stats.score += ai_settings.alien_points * len(aliens)
             sb.prep_score()
+        check_high_score(stats, sb)
     #Crear una nueva flota te aliens si ya no hay
     if len(aliens) == 0:
         #Destruye las balas existentes y crea una flota de aliens
@@ -186,3 +187,9 @@ def change_fleet_direction(ai_settings, aliens):
     for alien in aliens.sprites():
         alien.rect.y += ai_settings.fleet_drop_speed
     ai_settings.fleet_direction *= -1
+
+def check_high_score(stats, sb):
+    """Checar si hay alguna nueva puntuacion mas alta"""
+    if stats.score > stats.high_score:
+        stats.high_score = stats.score
+        sb.prep_high_score()
