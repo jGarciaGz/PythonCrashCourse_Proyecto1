@@ -66,4 +66,3 @@ class Scoreboard():
         self.screen.blit(self.level_image, self.level_rect)
         #Dibujar las naves
         self.ships.draw(self.screen)
-        
