@@ -34,7 +34,7 @@ def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bull
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(ai_settings, screen, sb, stats, play_button, ship, 
+            check_play_button(ai_settings, screen, stats, sb,  play_button, ship, 
                     aliens, bullets, mouse_x, mouse_y)
 
 def check_play_button(ai_settings, screen, stats, sb, play_button, ship, 
@@ -53,6 +53,7 @@ def check_play_button(ai_settings, screen, stats, sb, play_button, ship,
         sb.prep_score()
         sb.prep_high_score()
         sb.prep_level()
+        sb.prep_ships()
         #Vacias la lista de los aliens y las balas
         aliens.empty()
         bullets.empty()
@@ -145,11 +146,13 @@ def get_number_rows(ai_settings, ship_height, alien_height):
     number_rows = int(available_space_y / (2 * alien_height))
     return number_rows
 
-def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
+def ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Respuesta a la colision de nave y alien"""
     if stats.ships_left > 0:
         #Restar una vida
         stats.ships_left -= 1
+        #Actualizar el puntaje
+        sb.prep_ships()
         #Vaciar la lista de los aliens y las balas
         aliens.empty()
         bullets.empty()
@@ -162,25 +165,25 @@ def ship_hit(ai_settings, stats, screen, ship, aliens, bullets):
         stats.game_active = False
         pygame.mouse.set_visible(True)
 
-def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
+def check_aliens_bottom(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Checar si algun alien ha llegado al limte inferior de pantalla"""
     screen_rect = screen.get_rect()
     for alien in aliens.sprites():
         if alien.rect.bottom >= screen_rect.bottom:
             #Haremos lo mismo que si hubiera golpeado la nave (-1 vida)
-            ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+            ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets)
             break
 
-def update_aliens(ai_settings, stats, screen, ship, aliens, bullets):
+def update_aliens(ai_settings, screen, stats, sb, ship, aliens, bullets):
     """Checa si la flota esta en el borde, 
     y luego actuliza la posicion de todos los aliens de la flota"""
     check_fleet_edges(ai_settings, aliens)
     aliens.update()
     #Buscar colisiones alien-nave
     if pygame.sprite.spritecollideany(ship, aliens):
-        ship_hit(ai_settings, stats, screen, ship, aliens, bullets)
+        ship_hit(ai_settings, screen, stats, sb, ship, aliens, bullets)
     #Buscar aliens llegando al limite inferior de la pantalla
-    check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets)
+    check_aliens_bottom(ai_settings, screen, stats, sb, ship, aliens, bullets)
 
 def check_fleet_edges(ai_settings, aliens):
     """Responde apropiedamente si algun alien ha llegado al borde"""
