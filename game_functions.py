@@ -23,7 +23,7 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets):
+def check_events(ai_settings, screen, stats, sb, play_button, ship, aliens, bullets):
     """Responde a las teclas y clicks del mouse"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -34,10 +34,10 @@ def check_events(ai_settings, screen, stats, play_button, ship, aliens, bullets)
             check_keyup_events(event, ship)
         elif event.type == pygame.MOUSEBUTTONDOWN:
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            check_play_button(ai_settings, screen, stats, play_button, ship, 
+            check_play_button(ai_settings, screen, sb, stats, play_button, ship, 
                     aliens, bullets, mouse_x, mouse_y)
 
-def check_play_button(ai_settings, screen, stats, play_button, ship, 
+def check_play_button(ai_settings, screen, stats, sb, play_button, ship, 
         aliens, bullets, mouse_x, mouse_y):
     """Empezar un nuevo juego cuando le den click en jugar"""
     button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
@@ -49,6 +49,10 @@ def check_play_button(ai_settings, screen, stats, play_button, ship,
         #Resetar las estadisticas del juego
         stats.reset_stats()
         stats.game_active = True 
+        #Resetear las imagenes del puntaje
+        sb.prep_score()
+        sb.prep_high_score()
+        sb.prep_level()
         #Vacias la lista de los aliens y las balas
         aliens.empty()
         bullets.empty()
@@ -92,9 +96,12 @@ def check_bullet_aliens_collisions(ai_settings, screen, stats, sb, ship, aliens,
         check_high_score(stats, sb)
     #Crear una nueva flota te aliens si ya no hay
     if len(aliens) == 0:
-        #Destruye las balas existentes y crea una flota de aliens
+        #Destruye las balas existentes y crea una flota de aliens en nuevo nivel
         bullets.empty()
         ai_settings.increase_speed()
+        #Incrementar el nivel
+        stats.level += 1
+        sb.prep_level()
         create_fleet(ai_settings, screen, ship, aliens)
 
 def fire_bullet(ai_settings, screen, ship, bullets):
